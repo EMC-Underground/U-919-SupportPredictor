@@ -1,0 +1,31 @@
+{
+  "intents": [
+    {
+      "intent": "ChoseFrame",
+      "slots":[
+         {
+           "name": "Frame",
+           "type": "LIST_OF_FRAMES"
+         }
+       ]
+    },
+    {
+      "intent": "WhichPremonition",
+      "slots":[
+        {
+          "name" : "When",
+          "type" : "LIST_OF_PREMONITIONS"
+        }
+      ]
+    },
+    {
+      "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "AMAZON.StopIntent"
+    },
+    {
+      "intent": "AMAZON.CancelIntent"
+    }
+  ]
+}
