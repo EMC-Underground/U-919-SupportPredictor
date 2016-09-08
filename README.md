@@ -3,7 +3,7 @@ A simple Amazon Echo project to participate in the EMC Underground Challenge
 
 # Support Predictor
 The solution's goal is to predict whether a support case will be open for a
-specific EMC array. The prediction is using ML (Machine Learning) inside an AWS
+specific EMC array. The prediction is based ML (Machine Learning) inside an AWS
 lambda function using an existing historical data set.
 
 ## Logic:
@@ -25,5 +25,7 @@ lambda function using an existing historical data set.
 - (Alexa) "There is a XX% chance that there is an issue on DATE!"
 
 # Development
-The project is using NODE.JS. The ML component is the "synaptic" library:
-```cd src && npm install synaptic aws-sdk```
+The project is using NODE.JS.
+The ML component is the "synaptic" library; also planning to use AWS S3 for the lists.
+```
+cd src && npm install synaptic aws-sdk
