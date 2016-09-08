@@ -5,3 +5,6 @@ ListFrames list arrays
 ListFrames list what you have
 ListFrames list inventory
 ListFrames inventory
+Goodbye Goodbye
+Goodbye bye
+Goodbye Thank you

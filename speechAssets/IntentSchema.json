@@ -19,6 +19,9 @@
       ]
     },
     {
+      "intent": "Goodbye"
+    },
+    {
       "intent": "ListFrames"
     },
     {

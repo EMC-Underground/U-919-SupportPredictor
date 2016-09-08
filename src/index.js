@@ -195,6 +195,11 @@ SupportPredictor.prototype.intentHandlers = {
       response.ask(speechOutput, repromptText);
     },
 
+    "Goodbye": function (intent, session, response) {
+        var speechOutput = "Thank you for using the Dell EMC Support Predictor. Goodbye";
+        response.tell(speechOutput);
+    },
+
     "AMAZON.StopIntent": function (intent, session, response) {
         var speechOutput = "Goodbye";
         response.tell(speechOutput);
