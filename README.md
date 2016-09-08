@@ -14,11 +14,15 @@ lambda function using an existing historical data set.
 
 ## Sample dialog
 - (User)  "Alexa, use Support Predictor"
-- (Alexa) "Welcome to the EMC Support Predictor. I have data for two frames: 1234 and 5678. Please tell me which one to use?"
+- (Alexa) "Welcome to the Dell EMC Support Predictor. I have data for two frames: 1234 and 5678. Please tell me which one to use?"
+- (User)  "Help!"
+- (Alexa) "Please chose one of the ZZ frames for a prediction about an upcoming support request. You may also ask to list the frames."
+- (User)  "List frames please"
+- (Alexa) "I have data for ZZ frames. And they are: 1234,2345,3456,4567. Please choose a frame."
 - (User)  "Frame 1234"
 - (Alexa) "Building the neural network for frame 1234. Built successfully! Which day should I predict for?"
-- (User)  "Today" || "Tomorrow"
-- (Alexa) "There is a XX% chance that there is an issue today!"
+- (User)  "Today" || "Tomorrow" || "A month from now" || "day after tomorrow"
+- (Alexa) "There is a XX% chance that there is an issue on DATE!"
 
 # Development
 The project is using NODE.JS. The ML component is the "synaptic" library:

@@ -1,11 +1,11 @@
 {
   "intents": [
     {
-      "intent": "ChoseFrame",
+      "intent": "ChooseFrame",
       "slots":[
          {
            "name": "Frame",
-           "type": "LIST_OF_FRAMES"
+           "type": "AMAZON.FOUR_DIGIT_NUMBER"
          }
        ]
     },
@@ -14,9 +14,12 @@
       "slots":[
         {
           "name" : "When",
-          "type" : "LIST_OF_PREMONITIONS"
+          "type" : "AMAZON.DATE"
         }
       ]
+    },
+    {
+      "intent": "ListFrames"
     },
     {
       "intent": "AMAZON.HelpIntent"

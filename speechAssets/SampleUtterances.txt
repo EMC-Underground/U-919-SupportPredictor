@@ -1,2 +1,7 @@
-ChoseFrame frame {Frame}
+ChooseFrame frame {Frame}
 WhichPremonition {When}
+ListFrames list frames
+ListFrames list arrays
+ListFrames list what you have
+ListFrames list inventory
+ListFrames inventory
