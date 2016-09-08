@@ -1,5 +1,6 @@
 //Load synaptic library
 const synaptic = require('synaptic');
+const AWS = require('aws-sdk');
 
 var Neuron = synaptic.Neuron,
  Layer = synaptic.Layer,
@@ -180,9 +181,9 @@ SupportPredictor.prototype.intentHandlers = {
         var testSet = Math.floor(Math.random() * predictData.length);
 
         // this is where the magic happens.  right here: ---vvvvvvvvv--- see below
-        speechOutput = "There is a " + Math.round(myNetwork.activate(predictData[testSet].input)*100) + "% chance that there is an issue on " + date.value + "... ";
-        speechOutput += " Would you like to ask about another frame?";
-        repromptText = "Please chose a frame. You may ask to list frames."
+        speechOutput = "There is a " + Math.round(myNetwork.activate(predictData[testSet].input)*100) + "% chance that there is an issue on " + date.value + "with the frame " + selectedFrame + "... ";
+        speechOutput += " Would you like to hear a prediction about another date?";
+        repromptText = "Please chose a date or a frame. You may ask to list frames."
       }
       response.ask (speechOutput, repromptText);
     },
