@@ -26,4 +26,4 @@ lambda function using an existing historical data set.
 
 # Development
 The project is using NODE.JS. The ML component is the "synaptic" library:
-`cd src && npm install synaptic`
+```cd src && npm install synaptic aws-sdk```
