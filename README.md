@@ -9,8 +9,8 @@ lambda function using an existing historical data set.
 ## Logic:
 - Initialize ML NN (neural network)
 - Load a training set for a specified frame
-- Ask user for a future date (currently: today or tomorrow)
-- Support Predictor tells the channces
+- Ask user for a date
+- Support Predictor tells the chances for a new support request being open for a frame 
 
 ## Sample dialog
 - (User)  "Alexa, use Support Predictor"
