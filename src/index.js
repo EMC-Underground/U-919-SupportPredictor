@@ -141,11 +141,11 @@ SupportPredictor.prototype.intentHandlers = {
         if (Math.round(flag.error*100) < 20) {
             // error is less than 20%, pretty good!
             speechOutput += "Built successfully! Which day should I predict for?";
-            // repromptText = "Please chose a date for the prediction.";
+            // repromptText = "Please choose a date for the prediction.";
         } else if (Math.round(flag.error*100) < 50) {
             // error is between 50 and 20%... could be better, but ok
             speechOutput += "Built with poor accuracy... Consider getting better training data! Which day should I predict for?";
-            // repromptText = "Please chose a date for the prediction.";
+            // repromptText = "Please choose a date for the prediction.";
         } else {
             // error is greater than 50%. No accurate prediction possible
             speechOutput += "Built unsuccessfully! Please load me with better historical training data! ";
@@ -170,8 +170,8 @@ SupportPredictor.prototype.intentHandlers = {
       //Check the the frame is already selected
       if (selectedFrame === "") {
         // it didn't. Yell at 'em dumb users!!!
-        speechOutput = "Please chose a frame first.";
-        repromptText = "Please chose a frame. You may ask to list frames.";
+        speechOutput = "Please choose a frame first.";
+        repromptText = "Please choose a frame. You may ask to list frames.";
 
         // response.ask (speechOutput, repromptText);
       } else {
@@ -183,13 +183,13 @@ SupportPredictor.prototype.intentHandlers = {
         // this is where the magic happens.  right here: ---vvvvvvvvv--- see below
         speechOutput = "There is a " + Math.round(myNetwork.activate(predictData[testSet].input)*100) + "% chance that there is an issue on " + date.value + "with the frame " + selectedFrame + "... ";
         speechOutput += " Would you like to hear a prediction about another date?";
-        repromptText = "Please chose a date or a frame. You may ask to list frames."
+        repromptText = "Please choose a date or a frame. You may ask to list frames."
       }
       response.ask (speechOutput, repromptText);
     },
 
     "AMAZON.HelpIntent": function (intent, session, response) {
-      var speechOutput = "Please chose one of the " + knownFrames.length + " frames for a prediction about an upcoming support request. ";
+      var speechOutput = "Please choose one of the " + knownFrames.length + " frames for a prediction about an upcoming support request. ";
       speechOutput += "You may also ask to list the frames."
       var repromptText = "Please choose a frame.";
       response.ask(speechOutput, repromptText);
