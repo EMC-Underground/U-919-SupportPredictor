@@ -1,41 +1,24 @@
-//Load synaptic library
 const synaptic = require('synaptic');
-const AWS = require('aws-sdk');
+var AWS = require('aws-sdk');
+var s3 = new AWS.S3({httpOptions: { timeout: 2000 }, apiVersion: '2006-03-01', region: 'us-east-1'});
 
+// Main config JSON object. Data is read from S3 into it
+var config = {};
+
+// Set up Neural Objects
 var Neuron = synaptic.Neuron,
- Layer = synaptic.Layer,
- Network = synaptic.Network,
- Trainer = synaptic.Trainer,
+     Layer = synaptic.Layer,
+   Network = synaptic.Network,
+   Trainer = synaptic.Trainer,
  Architect = synaptic.Architect;
 
 var myNetwork = new Architect.Perceptron(2, 4, 4, 1);
 var trainer = new Trainer(myNetwork);
 
-var knownFrames = [
-  { 'SN' : "1234", 'model': "VMAX" },
-  { 'SN' : "2345", 'model': "VMAX" },
-  { 'SN' : "3456", 'model': "VNX" },
-  { 'SN' : "4567", 'model': "VNX" },
-];
+// State variables
+var selectedFrame = ""; // When non-empty keeps frame ID
 
-var trainingSet = [
- { 'input': [0,3,16605,98],  'output': [1] },
- { 'input': [1,0,7859,119],  'output': [0] },
- { 'input': [0,2,12591,138], 'output': [1] },
- { 'input': [1,0,11814,169], 'output': [0] },
- { 'input': [2,0,10453,86],  'output': [0] },
- { 'input': [3,0,19170,153], 'output': [0] },
- { 'input': [4,0,18448,100], 'output': [0] },
- { 'input': [5,0,14280,141], 'output': [0] },
- { 'input': [6,0,13319,197], 'output': [0] },
- { 'input': [7,0,7212,180],  'output': [0] },
- { 'input': [8,0,4978,100],  'output': [0] },
- { 'input': [9,0,10408,8],   'output': [0] },
- { 'input': [0,1,14546,58],  'output': [1] },
- { 'input': [1,0,2580,28],   'output': [0] },
- { 'input': [2,0,15171,115], 'output': [0] },
-];
-
+// hack.
 var predictData = [
    { 'input': [1,0,6019,96], 'output': [0] },
    { 'input': [2,0,4755,63], 'output': [0] },
@@ -44,19 +27,6 @@ var predictData = [
    { 'input': [1,1,5320,57], 'output': [1] },
    { 'input': [2,1,15267,59], 'output': [1] }
 ];
-
-function search(array, key, prop){
-  // Optional, but fallback to key['name'] if not selected
-  prop = (typeof prop === 'undefined') ? 'name' : prop;
-
-  for (var i=0; i < array.length; i++) {
-    if (array[i][prop] === key) {
-      return array[i];
-    }
-  }
-}
-
-var selectedFrame = "";
 
 /**
  * App ID for the skill
@@ -90,9 +60,7 @@ SupportPredictor.prototype.eventHandlers.onSessionStarted = function (sessionSta
 
 SupportPredictor.prototype.eventHandlers.onLaunch = function (launchRequest, session, response) {
     console.log("SupportPredictor onLaunch requestId: " + launchRequest.requestId + ", sessionId: " + session.sessionId);
-    // var speechOutput = "Welcome to the EMC Support Predictor. You can ask for a prediction for today.";
-    // var repromptText = "Ask for today's premonition.";
-    var speechOutput = "Welcome to the Dell EMC Support Predictor. I have data for " + knownFrames.length + " frames. Please tell me which frame to use?";
+    var speechOutput = "Welcome to the Dell EMC Support Predictor. I have data for " + Object.keys(config).length + " frames. Please tell me which frame to use?";
     var repromptText = "Please choose a frame.";
     response.ask(speechOutput, repromptText);
 };
@@ -104,57 +72,64 @@ SupportPredictor.prototype.eventHandlers.onSessionEnded = function (sessionEnded
 };
 
 SupportPredictor.prototype.intentHandlers = {
-    "ListFrames": function (intent, session, response) {
-      var speechOutput = "I have data for " + knownFrames.length + " frames. ";
 
-      speechOutput += "And they are: " + Object.keys(knownFrames).map(k => knownFrames[k].SN);
+      "ListFrames": function (intent, session, response) {
+        var speechOutput = "I see: " +
+          Object.keys(config).length + " frames, and they are: " +
+          Object.keys(config).map(k => " " + k + " is a " + config[k].model);
 
-      speechOutput += ". Please choose a frame.";
-      var repromptText = "Please choose a frame.";
+        speechOutput += ". Please choose a frame.";
+        var repromptText = "Please choose a frame.";
 
-      response.ask (speechOutput, repromptText);
-    },
+        response.ask(speechOutput, repromptText);
+      },
 
-    "ChooseFrame": function (intent, session, response) {
+      "ChooseFrame": function (intent, session, response) {
       var repromptText = "Please choose a date for the prediction.";
+      var speechOutput = "";
+
+      // get the frame ID from Echo
       var frame = intent.slots.Frame;
-      var speechOutput= "";
 
-      // search(array, 'string 1', 'id');
-      var found = search(knownFrames, frame.value, 'SN');
+      // Does this frame exist in our list?
+      if (config[frame.value]) {
+        //Found one! Great.
+        //console.log("Found: ", frame, " with ", config[frame].SN);
 
-      if (found) {
-        // speechOutput += " and I found it. Model is " + found.model + ". ";
+        //record the selection in the State
         selectedFrame = frame.value;
 
         //"Building the neural network for frame 1234. Built successfully! Which day should I predict for?"
-        speechOutput += "Building the neural network for " + found.model + " frame " + frame.value + ". ";
+        speechOutput += "Building the neural network for " + config[frame.value].model + " frame " + frame.value + ". ";
 
         //train the neural network
-        var flag = trainer.train(trainingSet, {
+        var flag = trainer.train(config[frame.value].trainingSet, {
             rate: .02,
             iterations: 8000,
             error: .01,
             cost: Trainer.cost.CROSS_ENTROPY
-          });
+        });
 
         if (Math.round(flag.error*100) < 20) {
             // error is less than 20%, pretty good!
             speechOutput += "Built successfully! Which day should I predict for?";
-            // repromptText = "Please choose a date for the prediction.";
+            // repromptText = "Please chose a date for the prediction.";
         } else if (Math.round(flag.error*100) < 50) {
             // error is between 50 and 20%... could be better, but ok
             speechOutput += "Built with poor accuracy... Consider getting better training data! Which day should I predict for?";
-            // repromptText = "Please choose a date for the prediction.";
+            // repromptText = "Please chose a date for the prediction.";
         } else {
             // error is greater than 50%. No accurate prediction possible
             speechOutput += "Built unsuccessfully! Please load me with better historical training data! ";
             speechOutput += "Cannot make a prediction, sorry.";
             response.tell(speechOutput);
         }
+
       } else {
+        //Nope, not there.
+        //console.log("not found: ", frame);
         speechOutput += "I did not find frame " + frame.value + ". Please choose a different frame.";
-        repromptText = "Please choose a frame. You may ask to list frames."
+        repromptText = "Please choose a frame. You may ask to list frames.";
       }
 
       response.ask (speechOutput, repromptText);
@@ -169,13 +144,11 @@ SupportPredictor.prototype.intentHandlers = {
 
       //Check the the frame is already selected
       if (selectedFrame === "") {
-        // it didn't. Yell at 'em dumb users!!!
+        // it is not. Yell at 'em dumb users!!!
         speechOutput = "Please choose a frame first.";
         repromptText = "Please choose a frame. You may ask to list frames.";
-
-        // response.ask (speechOutput, repromptText);
       } else {
-        // Ok, frame selected
+        // Ok, frame has already been select. Whew!
 
         //As a hack, randomly pick a test set
         var testSet = Math.floor(Math.random() * predictData.length);
@@ -183,37 +156,58 @@ SupportPredictor.prototype.intentHandlers = {
         // this is where the magic happens.  right here: ---vvvvvvvvv--- see below
         speechOutput = "There is a " + Math.round(myNetwork.activate(predictData[testSet].input)*100) + "% chance that there is an issue on " + date.value + "with the frame " + selectedFrame + "... ";
         speechOutput += " Would you like to hear a prediction about another date?";
-        repromptText = "Please choose a date or a frame. You may ask to list frames."
+        repromptText = "Please chose a date or a frame. You may ask to list frames."
       }
+
       response.ask (speechOutput, repromptText);
     },
 
     "AMAZON.HelpIntent": function (intent, session, response) {
-      var speechOutput = "Please choose one of the " + knownFrames.length + " frames for a prediction about an upcoming support request. ";
-      speechOutput += "You may also ask to list the frames."
+
+      var speechOutput = "Please choose one of the " + Object.keys(config).length;
+      speechOutput += " frames for a prediction about an upcoming support request.";
+      speechOutput += " You may also ask to list the frames."
       var repromptText = "Please choose a frame.";
       response.ask(speechOutput, repromptText);
     },
 
     "Goodbye": function (intent, session, response) {
-        var speechOutput = "Thank you for using the Dell EMC Support Predictor. Goodbye";
-        response.tell(speechOutput);
+      var speechOutput = "Thank you for using the Dell EMC Support Predictor. Goodbye";
+      response.tell(speechOutput);
     },
 
     "AMAZON.StopIntent": function (intent, session, response) {
-        var speechOutput = "Goodbye";
-        response.tell(speechOutput);
+      var speechOutput = "Goodbye";
+      response.tell(speechOutput);
     },
 
     "AMAZON.CancelIntent": function (intent, session, response) {
-        var speechOutput = "Goodbye";
-        response.tell(speechOutput);
+      var speechOutput = "Goodbye";
+      response.tell(speechOutput);
     }
 };
 
 // Create the handler that responds to the Alexa Request.
 exports.handler = function (event, context) {
+
+  var params = {
+    Bucket: 'supportpredictor',
+    Key: 'allData.json',
+    ResponseContentType : 'application/json'
+  }
+
+  s3.getObject(params, function (err, data) {
+    if(err) {
+      console.log("Error: ", err, " Stack: ", err.stack);
+      // config[err]=err.stack;
+    } else {
+      // read the json into the config
+      config = JSON.parse(data.Body);
+    }
     // Create an instance of the SupportPredictor skill.
     var supportPredictor = new SupportPredictor();
     supportPredictor.execute(event, context);
+
+  });
+
 };

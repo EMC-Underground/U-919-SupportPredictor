@@ -1,0 +1,29 @@
+{
+  "session": {
+    "sessionId": "SessionId.33091ab4-f24b-43e0-b355-3c1ae8de9011",
+    "application": {
+      "applicationId": "amzn1.ask.skill.b4fead93-d40e-4930-b049-6533cd0e592c"
+    },
+    "attributes": {},
+    "user": {
+      "userId": "amzn1.ask.account.AFP3ZWPOS2BGJR7OWJZ3DHPKMOMEM5RL57RGYDS4MCFL2SR4OE5OEND4T25ZUJXCJRDNS64DMZPJMMBX7BSMIMI5UZ3JTXIOP2QYYYSRVWRI77BXXPIFEFENZWSFFGV5NVJDDGMRAYLNPA6HLIHRMXBYFDVQNZPH37ALWRTEM5IMQCWXU2E4MAR7V3CFE2Z2EQC3SH46B3V4H2Y"
+    },
+    "new": true
+  },
+  "request": {
+    "type": "IntentRequest",
+    "requestId": "EdwRequestId.00bb649f-f6b0-435f-87c2-b25e44aefb88",
+    "locale": "en-US",
+    "timestamp": "2016-09-18T18:13:44Z",
+    "intent": {
+      "name": "ChooseFrame",
+      "slots": {
+        "Frame": {
+          "name": "Frame",
+          "value": "1234"
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}
