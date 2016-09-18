@@ -60,7 +60,7 @@ SupportPredictor.prototype.eventHandlers.onSessionStarted = function (sessionSta
 
 SupportPredictor.prototype.eventHandlers.onLaunch = function (launchRequest, session, response) {
     console.log("SupportPredictor onLaunch requestId: " + launchRequest.requestId + ", sessionId: " + session.sessionId);
-    var speechOutput = "Welcome to the Dell EMC Support Predictor. I have data for " + knownFrames.length + " frames. Please tell me which frame to use?";
+    var speechOutput = "Welcome to the Dell EMC Support Predictor. I have data for " + Object.keys(config).length + " frames. Please tell me which frame to use?";
     var repromptText = "Please choose a frame.";
     response.ask(speechOutput, repromptText);
 };
@@ -72,7 +72,19 @@ SupportPredictor.prototype.eventHandlers.onSessionEnded = function (sessionEnded
 };
 
 SupportPredictor.prototype.intentHandlers = {
-    "ChooseFrame": function (intent, session, response) {
+
+      "ListFrames": function (intent, session, response) {
+        var speechOutput = "I see: " +
+          Object.keys(config).length + " frames, and they are: " +
+          Object.keys(config).map(k => " " + k + " is a " + config[k].model);
+
+        speechOutput += ". Please choose a frame.";
+        var repromptText = "Please choose a frame.";
+
+        response.ask(speechOutput, repromptText);
+      },
+
+      "ChooseFrame": function (intent, session, response) {
       var repromptText = "Please choose a date for the prediction.";
       var speechOutput = "";
 
@@ -148,17 +160,6 @@ SupportPredictor.prototype.intentHandlers = {
       }
 
       response.ask (speechOutput, repromptText);
-    },
-
-    "ListFrames": function (intent, session, response) {
-      var speechOutput = "I see: " +
-        Object.keys(config).length + " frames, and they are: " +
-        Object.keys(config).map(k => " " + k + " is a " + config[k].model);
-
-      speechOutput += ". Please choose a frame.";
-      var repromptText = "Please choose a frame.";
-
-      response.ask(speechOutput, repromptText);
     },
 
     "AMAZON.HelpIntent": function (intent, session, response) {
