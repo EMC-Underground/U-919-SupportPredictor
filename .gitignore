@@ -1,5 +1,5 @@
 # Dependency directory
 src/node_modules
 
-# build out
+# build out file
 src/SupportPredictor.zip
