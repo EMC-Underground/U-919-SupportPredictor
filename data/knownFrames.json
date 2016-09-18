@@ -1,0 +1,22 @@
+{
+  "1234" : {
+    "SN" : "HK196801234",
+    "model": "VMAX100K",
+    "nickname" : "T1"
+  },
+  "2345" : {
+    "SN" : "HK196702345",
+    "model": "VMAX200K",
+    "nickname" : "T1"
+  },
+  "3456" : {
+    "SN" : "APM000123456",
+    "model": "VNX5700",
+    "nickname" : "T2"
+  },
+  "4567" : {
+    "SN" : "APM000124567",
+    "model": "VNX5800",
+    "nickname" : "T2"
+  }
+}
