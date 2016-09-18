@@ -1,6 +1,0 @@
-{
-  { 'SN' : "1234", 'model': "VMAX" },
-  { 'SN' : "2345", 'model': "VMAX" },
-  { 'SN' : "3456", 'model': "VNX" },
-  { 'SN' : "4567", 'model': "VNX" },
-}
